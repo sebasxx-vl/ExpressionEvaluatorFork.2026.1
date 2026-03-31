@@ -14,11 +14,6 @@ namespace ExpressionEvaluator.UI.Win
         {
             txtDisplay.Text += "7";
         }
-        // Renombrado de button16_Click a btnPow_Click
-        private void btnPow_Click(object sender, EventArgs e)
-        {
-            txtDisplay.Text += "^";
-        }
 
         private void btn8_Click(object sender, EventArgs e)
         {
