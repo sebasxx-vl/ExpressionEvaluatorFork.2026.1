@@ -12,9 +12,24 @@ public class Evaluator
     {
         var postFix = string.Empty;
         var stack = new Stack<char>();
-        foreach (var item in infix)
+        int i = 0;
+
+        while (i < infix.Length)
         {
-            if (IsOperator(item))
+            char item = infix[i];
+
+            if (char.IsDigit(item) || item == '.')
+            {
+                string numStr = "";
+                while (i < infix.Length && (char.IsDigit(infix[i]) || infix[i] == '.'))
+                {
+                    numStr += infix[i];
+                    i++;
+                }
+                postFix += numStr + " ";
+                continue;
+            }
+            else if (IsOperator(item))
             {
                 if (stack.Count == 0)
                 {
@@ -26,7 +41,7 @@ public class Evaluator
                     {
                         do
                         {
-                            postFix += stack.Pop();
+                            postFix += stack.Pop() + " ";
                         } while (stack.Peek() != '(');
                         stack.Pop();
                     }
@@ -38,22 +53,21 @@ public class Evaluator
                         }
                         else
                         {
-                            postFix += stack.Pop();
+                            postFix += stack.Pop() + " ";
                             stack.Push(item);
                         }
                     }
                 }
             }
-            else
-            {
-                postFix += item;
-            }
+            i++;
         }
+
         while (stack.Count > 0)
         {
-            postFix += stack.Pop();
+            postFix += stack.Pop() + " ";
         }
-        return postFix;
+
+        return postFix.Trim();
     }
 
     private static int PriorityStack(char item) => item switch
@@ -81,13 +95,15 @@ public class Evaluator
     private static double EvaluatePostfix(string postfix)
     {
         var stack = new Stack<double>();
-        foreach (char item in postfix)
+        var tokens = postfix.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var token in tokens)
         {
-            if (IsOperator(item))
+            if (token.Length == 1 && IsOperator(token[0]))
             {
                 var b = stack.Pop();
                 var a = stack.Pop();
-                stack.Push(item switch
+                stack.Push(token[0] switch
                 {
                     '+' => a + b,
                     '-' => a - b,
@@ -99,9 +115,10 @@ public class Evaluator
             }
             else
             {
-                stack.Push(double.Parse(item.ToString()));
+                stack.Push(double.Parse(token, System.Globalization.CultureInfo.InvariantCulture));
             }
         }
+
         return stack.Pop();
     }
 
